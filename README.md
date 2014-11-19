@@ -17,3 +17,6 @@ Nowadays writing cross platform applications is a part of our lives, we cannot a
 - Because of a small screen sizes and lower performance comparing with computer - you as a developer are forced to create new custom controls in order to squize all the information on a screen, you have to make a lot of optimizations in order to provide great user expirience to the user. 
 
 Unfortunately non of the todays wrappers can achive all of these (they can expose all the possible API of each platoform to you - but it wouldn't be a wrapper anymore). So at the end the only way is to create hybrid application where Kaare can help you.
+
+## Documentation
+[Kaare API](docs/API.md)
