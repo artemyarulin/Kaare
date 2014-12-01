@@ -1,0 +1,35 @@
+{
+  "name": "KaareReference",
+  "version": "1.0.0",
+  "description": "Kaare reference web server implementation - all the other platform have to follow the same API. Usefull for testing purposes",
+  "main": "server.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/artemyarulin/Kaare.git"
+  },
+  "keywords": [
+    "Kaare"
+  ],
+  "author": "Artem Yarulin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/artemyarulin/Kaare/issues"
+  },
+  "homepage": "https://github.com/artemyarulin/Kaare",
+  "devDependencies": {
+    "gulp": "~3.8.10",
+    "gulp-develop-server": "~0.2.5",
+    "gulp-load-plugins": "~0.7.1",
+    "gulp-plumber": "~0.6.6",
+    "gulp-watch": "~2.0.0",
+    "gulp-mocha": "~2.0.0",
+    "chai": "~1.10.0"
+  },
+  "dependencies": {
+    "request": "~2.48.0",
+    "restify": "~2.8.3"
+  }
+}
