@@ -10,7 +10,6 @@
 		968518A31A2FDDA500CEE8EB /* JSCJSToNative.m in Sources */ = {isa = PBXBuildFile; fileRef = 968518A21A2FDDA500CEE8EB /* JSCJSToNative.m */; };
 		96AB5D4E1A2F592600A37984 /* Kaare.m in Sources */ = {isa = PBXBuildFile; fileRef = 96AB5D4D1A2F592600A37984 /* Kaare.m */; };
 		96AB5D501A2F59C200A37984 /* JSCNativeToJS.m in Sources */ = {isa = PBXBuildFile; fileRef = 96AB5D4F1A2F59C200A37984 /* JSCNativeToJS.m */; };
-		96C0BC851A2FCC5F0013D548 /* js in Resources */ = {isa = PBXBuildFile; fileRef = 96C0BC841A2FCC5F0013D548 /* js */; };
 		96E092291A2F58A300BCF5A6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 96E092281A2F58A300BCF5A6 /* main.m */; };
 		9A2C41ACC02FB46409D67954 /* libPods-KaareTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FCE0EB260B24631DBD3AED2 /* libPods-KaareTests.a */; };
 		C3952661A1C6C37A30186A8A /* libPods-Kaare.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F92BA2427579FFF140D1C01 /* libPods-Kaare.a */; };
@@ -35,7 +34,6 @@
 		96AB5D4C1A2F592600A37984 /* Kaare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Kaare.h; sourceTree = "<group>"; };
 		96AB5D4D1A2F592600A37984 /* Kaare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Kaare.m; sourceTree = "<group>"; };
 		96AB5D4F1A2F59C200A37984 /* JSCNativeToJS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSCNativeToJS.m; sourceTree = "<group>"; };
-		96C0BC841A2FCC5F0013D548 /* js */ = {isa = PBXFileReference; lastKnownFileType = folder; name = js; path = ../../../js; sourceTree = "<group>"; };
 		96E092231A2F58A300BCF5A6 /* Kaare.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kaare.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96E092271A2F58A300BCF5A6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		96E092281A2F58A300BCF5A6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -108,7 +106,6 @@
 		96E092251A2F58A300BCF5A6 /* Kaare */ = {
 			isa = PBXGroup;
 			children = (
-				96C0BC841A2FCC5F0013D548 /* js */,
 				96E092261A2F58A300BCF5A6 /* Supporting Files */,
 				96AB5D4C1A2F592600A37984 /* Kaare.h */,
 				96AB5D4D1A2F592600A37984 /* Kaare.m */,
@@ -228,7 +225,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96C0BC851A2FCC5F0013D548 /* js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

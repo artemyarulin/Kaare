@@ -1,6 +1,5 @@
 #import "Kaare.h"
 
-
 @implementation KaareNative
 
 +(void)executeCommandNative:(NSString*)cmd

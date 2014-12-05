@@ -14,11 +14,11 @@
 		<string>https://github.com/artemyarulin/Kaare.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>platforms/OSX_iOS/Kaare/Kaare.xcworkspace</string>
+	<string>iOS/Kaare.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>1025B2D64CFBC710D5EF4E6BA847F16BBB002DD8</key>
-		<string>../../../..</string>
+		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/artemyarulin/Kaare.git</string>
