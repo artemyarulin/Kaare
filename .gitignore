@@ -1,4 +1,5 @@
-platforms/OSX_iOS/Kaare/Kaare.xcodeproj/project.xcworkspace/xcuserdata
-platforms/OSX_iOS/Kaare/Kaare.xcodeproj/xcuserdata
-platforms/OSX_iOS/Kaare/Kaare.xcworkspace/xcuserdata
-platforms/OSX_iOS/Kaare/Pods
+.vagrant
+iOS/Kaare.xcodeproj/project.xcworkspace/xcuserdata
+iOS/Kaare.xcodeproj/xcuserdata
+iOS/Kaare.xcworkspace/xcuserdata
+iOS/Pods
