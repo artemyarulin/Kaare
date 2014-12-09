@@ -71,3 +71,33 @@ JS: `var kaare = new Kaare(new KaareRemoteTransport('http://vagrantHost:7656'))`
 Obj-C: `Kaare* kaare = [[Kaare alloc] initWithTransport:[[KaareRemoteTransport alloc] initWithOptions:@{@"url":@"http://vagrantHost:7656"}]`
 
 From now on you can develop all your JS code using your favorite OS and tools like mocha, gulp, etc. AND at the same time use native API of the OS, no need to mock it all, no need to change your code.
+
+# Roadmap
+
+## 0.1.0
+- [ ] Functionality to call JS functions without kaare.addLocalCommand
+- [ ] Remote transport
+- [ ] Kaare-Platform
+- [ ] Distribution:
+    - [ ] Compile all JS in Kaare.js
+    - [ ] Create CocoaPod for Kaare which will include Kaare.js
+    - [ ] Create CocoaPod for Kaare-Platform
+
+## 0.2.0
+- [ ] Funcionality to call functions that returns anything but signal
+- [ ] UIWebView transport
+- [ ] Command buffer which will allow users not to think about activation order and just wait untill the tranports handshake finishes
+
+## 0.3.0
+- [ ] Example project which show the power of Kaare (idea: Some infinite amount of events from JS and populate table based on that?)
+- [ ] Smart distibution - maybe Rx.js already included and we should enable use to include only Kaare functions, without libs
+
+## 0.4.0
+- [ ] API stabilization, thinking what we can extend in a feature
+
+## 0.5.0
+- [ ] Windows Phone
+  - [ ] .Net C# Kaare implementation
+  - [ ] Windows Phone Web View transport
+## 0.6.0
+- [ ] Androind   
