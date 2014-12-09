@@ -5,6 +5,9 @@ Wouldn't it be cool to build UI using ReactiveCocoa and use JavaScript as a cros
 
 Kaare makes it even more awesome by making communication between native and JS code reactive as well.
 
+## Example of usage
+Kaare will handle all the communication from one context to another in both directions
+
 Your JS file:
 ```
 var kaare = new Kaare(new KaareNativeTransport())
@@ -45,13 +48,26 @@ RACSignal* (^duplicateString)(NSArray*) = ^RACSignal* (NSArray* params){
    subscribeNext:^(NSString* v) { NSLog(@"%@",v); }];
 ```
 
+# Extensions
+Kaare could be easily extended with new handlers. For example [Kaare Platform](https://github.com/artemyarulin/Kaare-Platform) brings some of the native API functions that could be useful for your JS.
 
+```
+var app = {}
+app.kaare = new Kaare(new KaareNativeTransport())
+app.platform = new KaarePlatform(kaare)
+
+app.platform.httpRequest('http://google.com')
+  .map(function(response)       { return response.body })
+  .map(function(body)           { return app.platform.xPath(body,'//input/@value') })
+  .map(function(inputValue)     { return 'Found name with value: ' + inputValue })
+  .subscribe(function(logEntry) { console.log(logEntry) })
+```
 
 # Transports
-Kaare support following communication schemes:
+Kaare supports different transports in order to support different execution contexts of JS (JavaScriptCore, UIWebView). One of the transports allows remote communication between your JS and native code, which is very handy for development.
 
-Scheme							| Desc
----						 		| ---
-JavaScriptCore <> Native 		| Using JavaScriptCore bindings
-UIWebView <> Native 	 		| Using [WebViewJavaScriptBridge](https://github.com/marcuswestin/WebViewJavascriptBridge) 
-HTML page (useful for testing)  | HTTP transport is used based on [webdis](https://github.com/nicolasff/webdis)      		 
+shell: `vagrant up` which will bring up redis and webdis <br>
+JS: `var kaare = new Kaare(new KaareRemoteTransport('http://vagrantHost:7656'))` <br>
+Obj-C: `Kaare* kaare = [[Kaare alloc] initWithTransport:[[KaareRemoteTransport alloc] initWithOptions:@{@"url":@"http://vagrantHost:7656"}]`
+
+From now on you can develop all your JS code using your favorite OS and tools like mocha, gulp, etc. AND at the same time use native API of the OS, no need to mock it all, no need to change your code.
