@@ -10,7 +10,7 @@
 {
     int rangeLength = 5;
     Kaare* kaare = [[Kaare alloc] initWithTransport:[[KaareJSCoreTransport alloc] initWithContextFinder:^JSContext *{
-        return [self getContextForTestAndEvaluate:@[@"var forwarder = new kaare.Forwarder()",
+        return [self getContextForTestAndEvaluate:@[@"var kaare = new Kaare()",
                                                     @"var output = []"]];
     }]];
     [kaare registerCommand:@"range" handler:^RACSignal* (NSArray *params) {
@@ -21,7 +21,7 @@
         }];
     }];
     
-    [context evaluateScript:[NSString stringWithFormat:@"forwarder.executeCommand('range',[%d]).subscribe(function(v){ output.push(v) },null,function(){ done() })",rangeLength]];
+    [context evaluateScript:[NSString stringWithFormat:@"kaare.executeCommand('range',[%d]).subscribe(function(v){ output.push(v) },null,function(){ done() })",rangeLength]];
     if (!isDone) WAIT_WHILE(!isDone,1);
     
     NSArray* output = [[context evaluateScript:@"output"] toArray];
@@ -34,11 +34,11 @@
 -(void)testReturnSignalWithNumber
 {
     Kaare* kaare = [[Kaare alloc] initWithTransport:[[KaareJSCoreTransport alloc] initWithContextFinder:^JSContext *{
-        return [self getContextForTestAndEvaluate:@[@"var forwarder = new kaare.Forwarder()"]];
+        return [self getContextForTestAndEvaluate:@[@"var kaare = new Kaare()"]];
     }]];
     [kaare registerCommand:@"number" handler:^RACSignal* (NSArray *params) { return [RACSignal return:@(42)]; }];
     
-    [context evaluateScript:[NSString stringWithFormat:@"forwarder.executeCommand('number').subscribe(function(v){ output = v*2 },null,function(){ done() })"]];
+    [context evaluateScript:[NSString stringWithFormat:@"kaare.executeCommand('number').subscribe(function(v){ output = v*2 },null,function(){ done() })"]];
     if (!isDone) WAIT_WHILE(!isDone,1);
     
     NSNumber* output = [[context evaluateScript:@"output"] toNumber];
@@ -48,11 +48,11 @@
 -(void)testReturnSignalWithNoValue
 {
     Kaare* kaare = [[Kaare alloc] initWithTransport:[[KaareJSCoreTransport alloc] initWithContextFinder:^JSContext *{
-        return [self getContextForTestAndEvaluate:@[@"var forwarder = new kaare.Forwarder()"]];
+        return [self getContextForTestAndEvaluate:@[@"var kaare = new Kaare()"]];
     }]];
     [kaare registerCommand:@"number" handler:^RACSignal* (NSArray *params) { return [RACSignal return:@(42)]; }];
     
-    [context evaluateScript:[NSString stringWithFormat:@"forwarder.executeCommand('number').subscribe(function(v){ output = v*2 },null,function(){ done() })"]];
+    [context evaluateScript:[NSString stringWithFormat:@"kaare.executeCommand('number').subscribe(function(v){ output = v*2 },null,function(){ done() })"]];
     if (!isDone) WAIT_WHILE(!isDone,1);
     
     NSNumber* output = [[context evaluateScript:@"output"] toNumber];

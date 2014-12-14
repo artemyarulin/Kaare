@@ -1,4 +1,4 @@
-kaare.transports.Remote = function(options) {
+Kaare.transports.Remote = function(options) {
   var _url = options.url || 'http://localhost:7645'
 
   //TODO: Subscribe to execition channel

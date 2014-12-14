@@ -70,7 +70,7 @@ From now on you can develop all your JS code using your favorite OS and tools li
 - [x] Functionality to call JS functions without kaare.addLocalCommand
 - [x] Funcionality to call functions that returns anything but signal
 - [x] User can register kaare using any order: JSCore than native, or vice versa. When command exec requested and other side is not yet ready - Kaare would wait for 10 second before fail
-- [ ] Forwarder name: Native and JS has a different API naming, we should solve it
+- [x] Forwarder name: Native and JS has a different API naming, we should solve it
 - [ ] Remote transport
 - [ ] Kaare-Platform
 - [ ] Distribution:

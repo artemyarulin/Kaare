@@ -1,4 +1,4 @@
-kaare.transports.Native = function () {
+Kaare.transports.Native = function () {
   const SYNC_MAX_RETRY = 10
 
   this.send = (cmd, params) => {
