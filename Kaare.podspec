@@ -14,7 +14,9 @@ Pod::Spec.new do |s|
     'Kaare' => ['js/build/kaare.js',
                 'js/build/kaare.full.js',] 
   }
-  s.public_header_files = "iOS/Kaare/Kaare.h"
+  s.public_header_files = ["iOS/Kaare/Kaare.h",
+                           "iOS/Kaare/Transports/*.h"]
+                           
   s.framework     = "JavaScriptCore"
   s.requires_arc  = true
 
