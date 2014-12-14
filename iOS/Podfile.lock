@@ -1,6 +1,6 @@
 PODS:
   - AGAsyncTestHelper (0.2.2)
-  - JSCoreBom (1.0.0)
+  - JSCoreBom (1.1.1)
   - ReactiveCocoa (2.3.1):
     - ReactiveCocoa/UI (= 2.3.1)
   - ReactiveCocoa/Core (2.3.1):
@@ -11,12 +11,12 @@ PODS:
 
 DEPENDENCIES:
   - AGAsyncTestHelper (~> 0.2.2)
-  - JSCoreBom (~> 1.0)
+  - JSCoreBom (~> 1.1.1)
   - ReactiveCocoa (~> 2.3.1)
 
 SPEC CHECKSUMS:
   AGAsyncTestHelper: 5d50910d1dcb4ef97252a7a7c15cc2998bf9de73
-  JSCoreBom: 186f248b769408af185d80c342097f2e76a53c31
+  JSCoreBom: 7917ae5ca9f8177729fea1efe40de46a218b9c2a
   ReactiveCocoa: dca75777b9d18990c8714a3a6f2149f29b4d1462
 
 COCOAPODS: 0.35.0

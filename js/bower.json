@@ -1,0 +1,6 @@
+{
+  "name": "kaare.js",
+  "dependencies": {
+    "rxjs": "~2.3.18"
+  }
+}

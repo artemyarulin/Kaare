@@ -1,56 +1,43 @@
 #import "Kaare.h"
 
-@implementation KaareNative
-
-+(void)executeCommandNative:(NSString*)cmd
-                           :(NSArray*)params
-                           :(JSValue*)onNext
-                           :(JSValue*)onError
-                           :(JSValue*)onCompleted
-{
-    NSString* str = params[0];
-    
-    [str enumerateSubstringsInRange:NSMakeRange(0, str.length)
-                            options:NSStringEnumerationByComposedCharacterSequences
-                         usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-                             [onNext callWithArguments:@[substring]];
-                         }];
-    [onCompleted callWithArguments:NULL];
-}
-
-@end
+NSString* const KaareErrorDomain = @"com.kaare.KaareErrorDomain";
 
 @implementation Kaare
-
-+(RACSignal*)executeCommandNative:(NSString*)cmd params:(NSArray*)params
 {
-    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-        NSString* str = params[0];
-        
-        [str enumerateSubstringsInRange:NSMakeRange(0, str.length)
-                                options:NSStringEnumerationByComposedCharacterSequences
-                             usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-                                 [subscriber sendNext:substring];
-                             }];
-        
-        [subscriber sendCompleted];
-        
-        return NULL;
-    }];
+    NSMutableDictionary* _localCommands;
+    id<KaareTransport> _transport;
 }
 
-+(RACSignal*)executeCommandJS:(NSString*)cmd params:(NSArray*)params context:(JSContext*)context
+-(instancetype)initWithTransport:(id<KaareTransport>)transport
 {
-    JSValue* function = [context evaluateScript:cmd];
-    JSValue* rxJSSignal = [function callWithArguments:params];
+    if (self = [super init])
+    {
+        _localCommands = [@{} mutableCopy];
+        _transport = transport;
+        [_transport onReceive:^(NSString *cmd, NSArray *params) {
+            return [self executeCommand:cmd params:params];
+        }];
+    }
+    return self;
+}
+
+-(RACSignal*)executeCommand:(NSString*)cmd params:(NSArray*)params
+{
+    if (_localCommands[cmd])
+    {
+        CommandHandler handler = _localCommands[cmd];
+        return handler(params);
+    }
     
-    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-        [rxJSSignal invokeMethod:@"subscribe" withArguments:@[^(NSString* s) { [subscriber sendNext:s]; },
-                                                              ^(id error) { [subscriber sendError:error]; },
-                                                              ^(){  [subscriber sendCompleted]; } ]];
-        return NULL;
-    }];
+    return [_transport send:cmd params:params];
 }
 
+-(void)registerCommand:(NSString *)cmd handler:(CommandHandler)handler
+{
+    if (_localCommands[cmd])
+        [NSException raise:@"KaareDuplicateCommand" format:@"Kaare already contains a command with name %@. Consider using different name or namespace",cmd];
+    
+    _localCommands[cmd] = handler;
+}
 
 @end

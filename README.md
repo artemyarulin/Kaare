@@ -1,51 +1,43 @@
 # Kaare
 Cross platform reactive communication channel between JavaScript and native code
 
-Wouldn't it be cool to build UI using ReactiveCocoa and use JavaScript as a cross platform business logic core which will utilize RxJS to solve callback hell? 
+Wouldn't it be cool to build UI using ReactiveCocoa and use JavaScript as a cross platform business logic core which could utilize reactive signals to solve callback hell? 
 
 Kaare makes it even more awesome by making communication between native and JS code reactive as well.
 
 ## Example of usage
 Kaare will handle all the communication from one context to another in both directions
 
-Your JS file:
 ```
-var kaare = new Kaare(new KaareNativeTransport())
-var splitString = function(str) { return Rx.Observable.fromArray(str.split('')) }
-var duplicateString = function(str) { return kaare.executeCommand('duplicateString',[str]) }
-
-splitString('hello')									// ['h','e','l','l','o']
-	.map(function(v){ return duplicateString(v) })		// ['hh','ee','ll','ll','oo']
-	.filter(function(v) { return v !== 'l' })			// ['hh','ee','oo']
-	.subscribe(function(v) { console.log(v) })			// output: ['hh','ee','oo']
-```
-
-Your Objective-C file:
-```
-Kaare* kaare = [[Kaare alloc] initWithTransport:[[KaareJSCoreTransport alloc]
-                                                     initWithOptions:nil
-                                                     contextFinder:^JSContext *{
-        return [self findContext]; // You can specify here where your context is located
-}]];
+-(void)testExampleFromReadme
+{
+    __block NSString* output = @"";
     
-RACSignal* (^splitString)(NSString*) = ^RACSignal* (NSString* str) {
-    return [kaare executeCommand:@"splitString" params:@[str]];
-};
-
-RACSignal* (^duplicateString)(NSArray*) = ^RACSignal* (NSArray* params){
-    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-        [subscriber sendNext:[params[0] stringByAppendingString:params[0]]];
-        [subscriber sendCompleted];
-        return nil;
+    Kaare* kaare = [[Kaare alloc] initWithTransport:[[KaareJSCoreTransport alloc] initWithContextFinder:^JSContext *{
+        // Here you can define how your JS context can be found
+        return [self getContextForTestAndEvaluate:@[@"var getString = function(){ return 'Hello' }",
+                                                    @"var splitString = function(str) { return Rx.Observable.fromArray(str.split('')) }"]];
+    }]];
+    
+    [[[kaare executeCommand:@"getString" params:nil]
+      flattenMap:^RACStream *(id value) { return [kaare executeCommand:@"splitString" params:@[value]]; }]
+      subscribeNext:^(id x) { output = [output stringByAppendingString:x]; }
+      completed:^{ isDone = YES; XCTAssertEqualObjects(output,@"Hello",@"There should be right output");
     }];
-};
-// Objective-c is not dynamic enough, so we have to register command in order to make it callable from JS
-[kaare addLocalCommand:@"duplicateString" handler:duplicateString];
+}
 
-[[[splitString(@"hello")
-   map:^id(NSString* v) { return duplicateString(@[v]); }]
-   filter:^BOOL(NSString* v) { return ![v isEqualToString:@"l"]; }]
-   subscribeNext:^(NSString* v) { NSLog(@"%@",v); }];
+-(void)testReturnSignalWithNumber
+{
+    Kaare* kaare = [[Kaare alloc] initWithTransport:[[KaareJSCoreTransport alloc] initWithContextFinder:^JSContext *{
+        return [self getContextForTestAndEvaluate:@[@"var forwarder = new kaare.Forwarder()"]];
+    }]];
+    [kaare registerCommand:@"number" handler:^RACSignal* (NSArray *params) { return [RACSignal return:@(42)]; }];
+    
+    [context evaluateScript:[NSString stringWithFormat:@"forwarder.executeCommand('number').subscribe(function(v){ output = v*2 },null,function(){ done() })"]];
+    
+    NSNumber* output = [[context evaluateScript:@"output"] toNumber];
+    XCTAssertEqual([output intValue], 84,@"There should be right number");
+}
 ```
 
 # Extensions
@@ -75,22 +67,23 @@ From now on you can develop all your JS code using your favorite OS and tools li
 # Roadmap
 
 ## 0.1.0
-- [ ] Functionality to call JS functions without kaare.addLocalCommand
+- [x] Functionality to call JS functions without kaare.addLocalCommand
+- [x] Funcionality to call functions that returns anything but signal
+- [x] User can register kaare using any order: JSCore than native, or vice versa. When command exec requested and other side is not yet ready - Kaare would wait for 10 second before fail
+- [ ] Forwarder name: Native and JS has a different API naming, we should solve it
 - [ ] Remote transport
 - [ ] Kaare-Platform
 - [ ] Distribution:
-    - [ ] Compile all JS in Kaare.js
+    - [x] Compile all JS in Kaare.js
+      - [x] Smart distibution - maybe Rx.js already included and we should allow user to include only Kaare functions, without libs
     - [ ] Create CocoaPod for Kaare which will include Kaare.js
     - [ ] Create CocoaPod for Kaare-Platform
 
 ## 0.2.0
-- [ ] Funcionality to call functions that returns anything but signal
 - [ ] UIWebView transport
-- [ ] Command buffer which will allow users not to think about activation order and just wait untill the tranports handshake finishes
 
 ## 0.3.0
 - [ ] Example project which show the power of Kaare (idea: Some infinite amount of events from JS and populate table based on that?)
-- [ ] Smart distibution - maybe Rx.js already included and we should enable use to include only Kaare functions, without libs
 
 ## 0.4.0
 - [ ] API stabilization, thinking what we can extend in a feature

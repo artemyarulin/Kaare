@@ -9,7 +9,10 @@ Pod::Spec.new do |s|
   s.platform      = :ios, "7.0"
   s.source        = { :git => "https://github.com/artemyarulin/Kaare.git", :tag => "0.0.1" }
   s.source_files  = "iOS/Kaare/Kaare.{h,m}"
-  s.resource_bundles = { 'KaareJS' => ['js/Kaare.js'] }
+  s.resource_bundles = { 
+    'Kaare' => ['js/build/kaare.js',
+                'js/build/kaare.full.js',] 
+  }
   s.public_header_files = "iOS/Kaare/Kaare.h"
   s.framework     = "JavaScriptCore"
   s.requires_arc  = true

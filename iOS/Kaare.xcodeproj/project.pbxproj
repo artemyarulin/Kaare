@@ -7,9 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		968518A31A2FDDA500CEE8EB /* JSCJSToNative.m in Sources */ = {isa = PBXBuildFile; fileRef = 968518A21A2FDDA500CEE8EB /* JSCJSToNative.m */; };
+		96883B4E1A343C7A00369256 /* KaareJSCoreTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = 96883B4D1A343C7A00369256 /* KaareJSCoreTransport.m */; };
+		96883B511A345C3200369256 /* KaareRemoteTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = 96883B501A345C3200369256 /* KaareRemoteTransport.m */; };
+		96883B531A350C4100369256 /* testNativeToJSCore.m in Sources */ = {isa = PBXBuildFile; fileRef = 96883B521A350C4100369256 /* testNativeToJSCore.m */; };
+		969982311A3AE7100057B455 /* kaare.full.js in Resources */ = {isa = PBXBuildFile; fileRef = 9699822F1A3AE7100057B455 /* kaare.full.js */; };
+		969982321A3AE7100057B455 /* kaare.js in Resources */ = {isa = PBXBuildFile; fileRef = 969982301A3AE7100057B455 /* kaare.js */; };
+		969982351A3D99D10057B455 /* JSCoreTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = 969982341A3D99D10057B455 /* JSCoreTestCase.m */; };
+		969982371A3D9A850057B455 /* testJSCoreToNative.m in Sources */ = {isa = PBXBuildFile; fileRef = 969982361A3D9A850057B455 /* testJSCoreToNative.m */; };
 		96AB5D4E1A2F592600A37984 /* Kaare.m in Sources */ = {isa = PBXBuildFile; fileRef = 96AB5D4D1A2F592600A37984 /* Kaare.m */; };
-		96AB5D501A2F59C200A37984 /* JSCNativeToJS.m in Sources */ = {isa = PBXBuildFile; fileRef = 96AB5D4F1A2F59C200A37984 /* JSCNativeToJS.m */; };
 		96E092291A2F58A300BCF5A6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 96E092281A2F58A300BCF5A6 /* main.m */; };
 		9A2C41ACC02FB46409D67954 /* libPods-KaareTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4FCE0EB260B24631DBD3AED2 /* libPods-KaareTests.a */; };
 		C3952661A1C6C37A30186A8A /* libPods-Kaare.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F92BA2427579FFF140D1C01 /* libPods-Kaare.a */; };
@@ -30,10 +35,18 @@
 		2B3BC34C20D713FC8EF4D312 /* Pods-KaareTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KaareTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-KaareTests/Pods-KaareTests.debug.xcconfig"; sourceTree = "<group>"; };
 		4FCE0EB260B24631DBD3AED2 /* libPods-KaareTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-KaareTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6F92BA2427579FFF140D1C01 /* libPods-Kaare.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Kaare.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		968518A21A2FDDA500CEE8EB /* JSCJSToNative.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSCJSToNative.m; sourceTree = "<group>"; };
+		96883B4C1A343C7A00369256 /* KaareJSCoreTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KaareJSCoreTransport.h; sourceTree = "<group>"; };
+		96883B4D1A343C7A00369256 /* KaareJSCoreTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KaareJSCoreTransport.m; sourceTree = "<group>"; };
+		96883B4F1A345C3200369256 /* KaareRemoteTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KaareRemoteTransport.h; sourceTree = "<group>"; };
+		96883B501A345C3200369256 /* KaareRemoteTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KaareRemoteTransport.m; sourceTree = "<group>"; };
+		96883B521A350C4100369256 /* testNativeToJSCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = testNativeToJSCore.m; sourceTree = "<group>"; };
+		9699822F1A3AE7100057B455 /* kaare.full.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = kaare.full.js; path = ../../js/build/kaare.full.js; sourceTree = "<group>"; };
+		969982301A3AE7100057B455 /* kaare.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = kaare.js; path = ../../js/build/kaare.js; sourceTree = "<group>"; };
+		969982331A3D99D10057B455 /* JSCoreTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSCoreTestCase.h; sourceTree = "<group>"; };
+		969982341A3D99D10057B455 /* JSCoreTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSCoreTestCase.m; sourceTree = "<group>"; };
+		969982361A3D9A850057B455 /* testJSCoreToNative.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = testJSCoreToNative.m; sourceTree = "<group>"; };
 		96AB5D4C1A2F592600A37984 /* Kaare.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Kaare.h; sourceTree = "<group>"; };
 		96AB5D4D1A2F592600A37984 /* Kaare.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Kaare.m; sourceTree = "<group>"; };
-		96AB5D4F1A2F59C200A37984 /* JSCNativeToJS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSCNativeToJS.m; sourceTree = "<group>"; };
 		96E092231A2F58A300BCF5A6 /* Kaare.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Kaare.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		96E092271A2F58A300BCF5A6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		96E092281A2F58A300BCF5A6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -83,6 +96,26 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		96883B4B1A343C6100369256 /* Transports */ = {
+			isa = PBXGroup;
+			children = (
+				96883B4C1A343C7A00369256 /* KaareJSCoreTransport.h */,
+				96883B4D1A343C7A00369256 /* KaareJSCoreTransport.m */,
+				96883B4F1A345C3200369256 /* KaareRemoteTransport.h */,
+				96883B501A345C3200369256 /* KaareRemoteTransport.m */,
+			);
+			path = Transports;
+			sourceTree = "<group>";
+		};
+		9699822E1A3AE6EB0057B455 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9699822F1A3AE7100057B455 /* kaare.full.js */,
+				969982301A3AE7100057B455 /* kaare.js */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		96E0921A1A2F58A300BCF5A6 = {
 			isa = PBXGroup;
 			children = (
@@ -106,6 +139,8 @@
 		96E092251A2F58A300BCF5A6 /* Kaare */ = {
 			isa = PBXGroup;
 			children = (
+				9699822E1A3AE6EB0057B455 /* Resources */,
+				96883B4B1A343C6100369256 /* Transports */,
 				96E092261A2F58A300BCF5A6 /* Supporting Files */,
 				96AB5D4C1A2F592600A37984 /* Kaare.h */,
 				96AB5D4D1A2F592600A37984 /* Kaare.m */,
@@ -126,8 +161,8 @@
 			isa = PBXGroup;
 			children = (
 				96E092401A2F58A300BCF5A6 /* Supporting Files */,
-				96AB5D4F1A2F59C200A37984 /* JSCNativeToJS.m */,
-				968518A21A2FDDA500CEE8EB /* JSCJSToNative.m */,
+				96883B521A350C4100369256 /* testNativeToJSCore.m */,
+				969982361A3D9A850057B455 /* testJSCoreToNative.m */,
 			);
 			path = KaareTests;
 			sourceTree = "<group>";
@@ -136,6 +171,8 @@
 			isa = PBXGroup;
 			children = (
 				96E092411A2F58A300BCF5A6 /* Info.plist */,
+				969982331A3D99D10057B455 /* JSCoreTestCase.h */,
+				969982341A3D99D10057B455 /* JSCoreTestCase.m */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -225,6 +262,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				969982311A3AE7100057B455 /* kaare.full.js in Resources */,
+				969982321A3AE7100057B455 /* kaare.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -305,7 +344,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				96883B4E1A343C7A00369256 /* KaareJSCoreTransport.m in Sources */,
 				96AB5D4E1A2F592600A37984 /* Kaare.m in Sources */,
+				96883B511A345C3200369256 /* KaareRemoteTransport.m in Sources */,
 				96E092291A2F58A300BCF5A6 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -314,8 +355,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96AB5D501A2F59C200A37984 /* JSCNativeToJS.m in Sources */,
-				968518A31A2FDDA500CEE8EB /* JSCJSToNative.m in Sources */,
+				969982371A3D9A850057B455 /* testJSCoreToNative.m in Sources */,
+				96883B531A350C4100369256 /* testNativeToJSCore.m in Sources */,
+				969982351A3D99D10057B455 /* JSCoreTestCase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

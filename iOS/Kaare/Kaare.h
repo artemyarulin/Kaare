@@ -1,25 +1,30 @@
-#import <Foundation/Foundation.h>
 #import "ReactiveCocoa.h"
-@import JavaScriptCore;
 
-@protocol KaareJSExport <JSExport>
+typedef RACSignal* (^CommandHandler)(NSArray* params);
+typedef RACSignal* (^OnReceiveHandler)(NSString* cmd, NSArray* params);
 
-+(void)executeCommandNative:(NSString*)cmd
-                           :(NSArray*)params
-                           :(JSValue*)onNext
-                           :(JSValue*)onError
-                           :(JSValue*)onCompleted;
+@protocol KaareTransport
 
-@end
-
-@interface KaareNative : NSObject <KaareJSExport>
+-(RACSignal*)send:(NSString*)cmd params:(NSArray*)params;
+-(void)onReceive:(OnReceiveHandler)handler;
 
 @end
 
 
 @interface Kaare : NSObject
 
-+(RACSignal*)executeCommandNative:(NSString*)cmd params:(NSArray*)params;
-+(RACSignal*)executeCommandJS:(NSString*)cmd params:(NSArray*)params context:(JSContext*)context;
+-(instancetype)initWithTransport:(id<KaareTransport>)transport;
+
+-(RACSignal*)executeCommand:(NSString*)cmd params:(NSArray*)params;
+-(void)registerCommand:(NSString*)cmd handler:(CommandHandler)handler;
 
 @end
+
+extern NSString* const KaareErrorDomain;
+
+enum KaareErrType
+{
+    KaareErrUndefined = 0,
+    KaareErrCommandNotFound,
+    KaareErrJSException
+};
