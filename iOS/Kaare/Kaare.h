@@ -7,6 +7,7 @@ typedef RACSignal* (^OnReceiveHandler)(NSString* cmd, NSArray* params);
 
 -(RACSignal*)send:(NSString*)cmd params:(NSArray*)params;
 -(void)onReceive:(OnReceiveHandler)handler;
+-(void)stop;
 
 @end
 
@@ -17,6 +18,8 @@ typedef RACSignal* (^OnReceiveHandler)(NSString* cmd, NSArray* params);
 
 -(RACSignal*)executeCommand:(NSString*)cmd params:(NSArray*)params;
 -(void)registerCommand:(NSString*)cmd handler:(CommandHandler)handler;
+
+@property (readonly) id<KaareTransport> transport;
 
 @end
 

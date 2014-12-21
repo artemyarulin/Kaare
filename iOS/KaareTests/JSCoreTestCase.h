@@ -3,6 +3,7 @@
 
 #import "Kaare.h"
 #import "KaareJSCoreTransport.h"
+#import "KaareRemoteTransport.h"
 #import "JSCoreBom.h"
 
 @interface JSCoreTestCase : XCTestCase

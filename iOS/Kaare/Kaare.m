@@ -40,4 +40,6 @@ NSString* const KaareErrorDomain = @"com.kaare.KaareErrorDomain";
     _localCommands[cmd] = handler;
 }
 
+-(id<KaareTransport>)transport { return _transport; }
+
 @end

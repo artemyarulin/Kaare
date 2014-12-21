@@ -86,5 +86,9 @@ static NSString* K_SYNC_OBJECT_NAME = @"__kaareTransportNativeSyncObject";
     }];
 }
 
+-(void)stop
+{
+    _contextFinder()[K_SYNC_OBJECT_NAME] = nil;
+}
 
 @end

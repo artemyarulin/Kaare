@@ -24,7 +24,7 @@ Kaare.transports.Remote.RedisCommunicator = function (url) {
 
         console.log(`Sending message: ` + JSON.stringify(msg))
         serData = btoa(JSON.stringify(msg))
-        req.open('GET', `${_url}/PUBLISH/${key}/${serData}`, false)
+        req.open('GET', `${_url}/PUBLISH/${key}/${serData}`, true)
         req.onreadystatechange = () => {
             if (req.responseText === '{"PUBLISH":0}')
                 console.error(`There are no subscibers found for this message: ${serData}`)
