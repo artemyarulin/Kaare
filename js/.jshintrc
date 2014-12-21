@@ -27,8 +27,8 @@
     "strict"        : false,     // true: Requires all functions run in ES5 Strict Mode
     "maxparams"     : 3,    // {int} Max number of formal params allowed per function
     "maxdepth"      : 2,    // {int} Max depth of nested blocks (within functions)
-    "maxstatements" : 10,    // {int} Max number statements per function
-    "maxcomplexity" : 4,    // {int} Max cyclomatic complexity per function
+    "maxstatements" : 11,    // {int} Max number statements per function
+    "maxcomplexity" : 6,    // {int} Max cyclomatic complexity per function
     "maxlen"        : false,    // {int} Max number of characters per line
 
     // Relaxing
@@ -80,5 +80,5 @@
     "yui"           : false,    // Yahoo User Interface
 
     // Custom Globals
-    "predef": ["Kaare","Rx","setTimeout","console","__kaareTransportNativeSyncObject"]
+    "predef": ["Kaare","Rx","setTimeout","console","__kaareTransportNativeSyncObject","XMLHttpRequest","atob","btoa"]
 }

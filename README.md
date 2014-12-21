@@ -66,31 +66,38 @@ From now on you can develop all your JS code using your favorite OS and tools li
 
 # Roadmap
 
-## 0.1.0
+## 1.0.0
 - [x] Functionality to call JS functions without kaare.addLocalCommand
 - [x] Funcionality to call functions that returns anything but signal
 - [x] User can register kaare using any order: JSCore than native, or vice versa. When command exec requested and other side is not yet ready - Kaare would wait for 10 second before fail
 - [x] Forwarder name: Native and JS has a different API naming, we should solve it
 - [ ] Remote transport
-- [ ] Kaare-Platform
-- [ ] Distribution:
+  - [x] JS side
+  - [ ] Native side
+- [x] Kaare-Platform
+- [ ] Split kaare.exec and kaare.runCommand: Then we will be able to move away from eval in JS for command execution
+- [x] Distribution:
     - [x] Compile all JS in Kaare.js
       - [x] Smart distibution - maybe Rx.js already included and we should allow user to include only Kaare functions, without libs
-    - [ ] Create CocoaPod for Kaare which will include Kaare.js
-    - [ ] Create CocoaPod for Kaare-Platform
+    - [x] Create CocoaPod for Kaare which will include Kaare.js
+    - [x] Create CocoaPod for Kaare-Platform
+    - [ ] Publish Kaare and KaarePlatform to Cocoapods
 
-## 0.2.0
+## 1.2.0
 - [ ] UIWebView transport
+- [ ] Think about how we can simplify the API and get rid of `KaarePlatform* platform = [[KaarePlatform alloc] initWithKaare:kaare]`
+- [ ] Think about JSContext initializers?
 
-## 0.3.0
+## 1.3.0
 - [ ] Example project which show the power of Kaare (idea: Some infinite amount of events from JS and populate table based on that?)
 
-## 0.4.0
+## 1.4.0
 - [ ] API stabilization, thinking what we can extend in a feature
 
-## 0.5.0
+## 2.0.0
 - [ ] Windows Phone
   - [ ] .Net C# Kaare implementation
   - [ ] Windows Phone Web View transport
-## 0.6.0
+
+## 3.0.0
 - [ ] Androind   
