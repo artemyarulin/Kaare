@@ -1,38 +1,31 @@
-var Kaare = function (transport) { // jshint ignore:line 
-    this.transport = transport || new Kaare.transports.Native()
+var Kaare = function (transport = new Kaare.transports.Native()) { // jshint ignore:line 
+    let _localCommands = {},
+        _transport = transport
 
-    this.transport.onIncomingCommand = (cmd, params) => {
-        let retVal = _getCommandResult(cmd, params)
+    _transport.onIncomingCommand = (cmd, params) => {
+        if (cmd in _localCommands)
+        {
+            let handler = _localCommands[cmd],
+                handlerResult
+            
+            try { handlerResult = handler(params) }
+            catch (ex) { return Rx.Observable.throw(ex) }
 
-        if (retVal instanceof Rx.Observable)
-            return retVal
-        else
-            return new Rx.Observable.return(retVal)
+            return handlerResult
+        }
+        return Rx.Observable.throw(new Error(`Command ${cmd} cannot be found`))
     }
 
+    this.executeCommand = (cmd, params) => (_transport.executeCommand(cmd, params))
 
-    this.executeCommand = (cmd, params) => (this.transport.send(cmd, params))
+    this.registerCommand = (cmd, handler) => {
+        if (cmd in _localCommands)
+            throw new Error(`Kaare already contains a command with name ${cmd}. Consider using different name`)
 
-    var _getCommandResult = (cmd, params) => {
-        let func, err
-
-        try { func = eval.call(null, cmd) }
-        catch (e) { err = e}
-        
-        if (err)
-            return Rx.Observable.throw(new Error(`Command ${cmd} returned exception ${err}`))            
-
-        if (!func)
-            return Rx.Observable.throw(new Error(`Command ${cmd} cannot be found`))
-        
-        if (typeof func === 'function')
-            return func.apply(null,params)
-
-        if (func instanceof Rx.Observable)
-            return func
-        else
-            return Rx.Observable.return(func)
+        _localCommands[cmd] = handler
     }
+
+    this.transport = _transport
 }
 
 Kaare.transports = {}

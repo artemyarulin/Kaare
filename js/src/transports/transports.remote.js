@@ -16,7 +16,7 @@ Kaare.transports.Remote = function (options) {
         console.error(`Communicator has failed: ${error}`)
     })
 
-    this.send = (cmd, params) => {
+    this.executeCommand = (cmd, params) => {
         return Rx.Observable.create(observer => {
             let opId = _genUuid()
             console.info(`Added handler for ${opId}.${_curKey}`)
@@ -27,7 +27,7 @@ Kaare.transports.Remote = function (options) {
         })
     }
 
-    this.stop = () => _communicator.unsubscribe()
+    this.stopReceiving = () => _communicator.unsubscribe()
 
     var _onCommand = (data) => {
         let op = this.onIncomingCommand(data.cmd, data.params)

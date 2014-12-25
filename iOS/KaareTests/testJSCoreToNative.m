@@ -22,7 +22,7 @@
     }];
     
     [context evaluateScript:[NSString stringWithFormat:@"kaare.executeCommand('range',[%d]).subscribe(function(v){ output.push(v) },null,function(){ done() })",rangeLength]];
-    if (!isDone) WAIT_WHILE(!isDone,1);
+    if (!isDone) WAIT_WHILE(!isDone,2);
     
     NSArray* output = [[context evaluateScript:@"output"] toArray];
     XCTAssertEqual(output.count, (NSUInteger)rangeLength,@"There should be right number of numbers");
@@ -39,21 +39,7 @@
     [kaare registerCommand:@"number" handler:^RACSignal* (NSArray *params) { return [RACSignal return:@(42)]; }];
     
     [context evaluateScript:[NSString stringWithFormat:@"kaare.executeCommand('number').subscribe(function(v){ output = v*2 },null,function(){ done() })"]];
-    if (!isDone) WAIT_WHILE(!isDone,1);
-    
-    NSNumber* output = [[context evaluateScript:@"output"] toNumber];
-    XCTAssertEqual([output intValue], 84,@"There should be right number");
-}
-
--(void)testReturnSignalWithNoValue
-{
-    Kaare* kaare = [[Kaare alloc] initWithTransport:[[KaareJSCoreTransport alloc] initWithContextFinder:^JSContext *{
-        return [self getContextForTestAndEvaluate:@[@"var kaare = new Kaare()"]];
-    }]];
-    [kaare registerCommand:@"number" handler:^RACSignal* (NSArray *params) { return [RACSignal return:@(42)]; }];
-    
-    [context evaluateScript:[NSString stringWithFormat:@"kaare.executeCommand('number').subscribe(function(v){ output = v*2 },null,function(){ done() })"]];
-    if (!isDone) WAIT_WHILE(!isDone,1);
+    if (!isDone) WAIT_WHILE(!isDone,2);
     
     NSNumber* output = [[context evaluateScript:@"output"] toNumber];
     XCTAssertEqual([output intValue], 84,@"There should be right number");

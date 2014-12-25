@@ -1,51 +1,69 @@
 "use strict";
-var Kaare = function(transport) {
-  var $__0 = this;
-  this.transport = transport || new Kaare.transports.Native();
-  this.transport.onIncomingCommand = (function(cmd, params) {
-    var retVal = _getCommandResult(cmd, params);
-    if (retVal instanceof Rx.Observable)
-      return retVal;
-    else
-      return new Rx.Observable.return(retVal);
+var Kaare = function() {
+  var transport = arguments[0] !== (void 0) ? arguments[0] : new Kaare.transports.Native();
+  var _localCommands = {},
+      _transport = transport;
+  _transport.onIncomingCommand = (function(cmd, params) {
+    if (cmd in _localCommands) {
+      var handler = _localCommands[cmd],
+          handlerResult;
+      try {
+        handlerResult = handler(params);
+      } catch (ex) {
+        return Rx.Observable.throw(ex);
+      }
+      return handlerResult;
+    }
+    return Rx.Observable.throw(new Error(("Command " + cmd + " cannot be found")));
   });
   this.executeCommand = (function(cmd, params) {
-    return ($__0.transport.send(cmd, params));
+    return (_transport.executeCommand(cmd, params));
   });
-  var _getCommandResult = (function(cmd, params) {
-    var func,
-        err;
-    try {
-      func = eval.call(null, cmd);
-    } catch (e) {
-      err = e;
-    }
-    if (err)
-      return Rx.Observable.throw(new Error(("Command " + cmd + " returned exception " + err)));
-    if (!func)
-      return Rx.Observable.throw(new Error(("Command " + cmd + " cannot be found")));
-    if (typeof func === 'function')
-      return func.apply(null, params);
-    if (func instanceof Rx.Observable)
-      return func;
-    else
-      return Rx.Observable.return(func);
+  this.registerCommand = (function(cmd, handler) {
+    if (cmd in _localCommands)
+      throw new Error(("Kaare already contains a command with name " + cmd + ". Consider using different name"));
+    _localCommands[cmd] = handler;
   });
+  this.transport = _transport;
 };
 Kaare.transports = {};
 
 "use strict";
 Kaare.transports.Native = function() {
+  var $__0 = this;
   var SYNC_MAX_RETRY = 10;
-  this.send = (function(cmd, params) {
+  var _syncObject;
+  ['name', 'message'].forEach((function(prop) {
+    Object.defineProperty(Error.prototype, prop, {
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  }));
+  Rx.Observable.create((function(observer) {
+    if (typeof __kaareTransportNativeSyncObject === 'undefined') {
+      void 0;
+      setTimeout((function() {
+        return observer.onError(new Error('Synchronization object cannot be found. Check that other side is ready'));
+      }), 1000);
+    } else {
+      observer.onNext(__kaareTransportNativeSyncObject);
+      observer.onCompleted();
+    }
+  })).retry(SYNC_MAX_RETRY).subscribe((function(v) {
+    _syncObject = v;
+    _syncObject.execJS = $__0.onIncomingCommand;
+  }), (function(err) {
+    return void 0;
+  }));
+  this.executeCommand = (function(cmd, params) {
     return Rx.Observable.create((function(observer) {
-      if (typeof __kaareTransportNativeSyncObject === 'undefined') {
-        void 0;
+      if (!_syncObject) {
         setTimeout((function() {
           return observer.onError(new Error('Synchronization object cannot be found. Check that other side is ready'));
         }), 1000);
       } else
-        __kaareTransportNativeSyncObject.bridge(cmd, params, (function(value) {
+        _syncObject.execNative(cmd, params, (function(value) {
           return observer.onNext(value);
         }), (function(err) {
           return observer.onError(err);
@@ -53,6 +71,9 @@ Kaare.transports.Native = function() {
           return observer.onCompleted();
         }));
     })).retry(SYNC_MAX_RETRY);
+  });
+  this.stopReceiving = (function() {
+    return _syncObject.execJS = null;
   });
 };
 
@@ -73,7 +94,7 @@ Kaare.transports.Remote = function(options) {
   }), (function(error) {
     void 0;
   }));
-  this.send = (function(cmd, params) {
+  this.executeCommand = (function(cmd, params) {
     return Rx.Observable.create((function(observer) {
       var opId = _genUuid();
       void 0;
@@ -85,7 +106,7 @@ Kaare.transports.Remote = function(options) {
       });
     }));
   });
-  this.stop = (function() {
+  this.stopReceiving = (function() {
     return _communicator.unsubscribe();
   });
   var _onCommand = (function(data) {
@@ -141,29 +162,53 @@ Kaare.transports.Remote = function(options) {
 "use strict";
 Kaare.transports.Remote.RedisCommunicator = function(url) {
   var $__0 = this;
+  var DATA_TYPE = '__kType',
+      TYPE_ERROR = 'Error';
   var _url = url,
       _req,
-      _key,
-      _isAborted;
+      _key;
   this.publish = (function(key, msg) {
+    var $__1;
     void 0;
     var req = new XMLHttpRequest(),
         serData;
-    if (_isAborted)
-      msg = {'ABORT': 'ABORT'};
-    if (msg.data instanceof Error)
-      msg.data = JSON.stringify(msg.data, ['message', 'arguments', 'type', 'name']);
+    if (msg.data instanceof Error) {
+      msg.data = ($__1 = {}, Object.defineProperty($__1, "name", {
+        value: msg.data.name,
+        configurable: true,
+        enumerable: true,
+        writable: true
+      }), Object.defineProperty($__1, "message", {
+        value: msg.data.message,
+        configurable: true,
+        enumerable: true,
+        writable: true
+      }), Object.defineProperty($__1, "stack", {
+        value: msg.data.stack,
+        configurable: true,
+        enumerable: true,
+        writable: true
+      }), Object.defineProperty($__1, DATA_TYPE, {
+        value: TYPE_ERROR,
+        configurable: true,
+        enumerable: true,
+        writable: true
+      }), $__1);
+    }
     void 0;
     serData = btoa(JSON.stringify(msg));
-    req.open('GET', (_url + "/PUBLISH/" + key + "/" + serData), false);
+    if (serData.length > 200000)
+      throw new Error('Currently remote transport does not support messages with a size bigger than 200kb');
+    req.open('POST', _url, false);
     req.onreadystatechange = (function() {
       if (req.responseText === '{"PUBLISH":0}')
         void 0;
     });
-    req.send();
+    req.send(("PUBLISH/" + key + "/" + serData));
   });
   this.subscribe = (function(key) {
-    var prevRespLength = 0;
+    var prevRespLength = 0,
+        prevMsgPart;
     _key = key;
     _req = new XMLHttpRequest();
     _req.open('GET', (_url + "/SUBSCRIBE/" + key), true);
@@ -178,10 +223,21 @@ Kaare.transports.Remote.RedisCommunicator = function(url) {
         prevRespLength = response.length;
         void 0;
         chunk.split(/(?={)/).forEach((function(msg) {
+          if (prevMsgPart) {
+            msg = prevMsgPart + msg;
+            prevMsgPart = null;
+          }
           try {
             parsedData = JSON.parse(msg);
+          } catch (ex) {
+            prevMsgPart = msg;
+            return;
+          }
+          try {
             msg = parsedData.SUBSCRIBE.pop();
             parsedData = msg !== 1 ? JSON.parse(atob(msg)) : 1;
+            if (parsedData.data && DATA_TYPE in parsedData.data)
+              parsedData.data = processCustomType(parsedData.data);
             void 0;
           } catch (ex) {
             void 0;
@@ -201,8 +257,21 @@ Kaare.transports.Remote.RedisCommunicator = function(url) {
   this.unsubscribe = (function() {
     if (_req) {
       _req.abort();
-      _isAborted = true;
       void 0;
     }
   });
+  var processCustomType = function(data) {
+    if (data[DATA_TYPE] !== TYPE_ERROR)
+      throw new Error(("Not supportd custom type: " + data[DATA_TYPE]));
+    var glob = (function() {
+      return this;
+    }).call(null),
+        err;
+    if (data.name in glob)
+      err = new glob[data.name](data.message);
+    else
+      err = new Error(data.message);
+    err.stack = data.stack;
+    return err;
+  };
 };

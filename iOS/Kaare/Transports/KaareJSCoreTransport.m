@@ -1,6 +1,7 @@
 #import "KaareJSCoreTransport.h"
 
 static NSString* K_SYNC_OBJECT_NAME = @"__kaareTransportNativeSyncObject";
+const int SYNC_MAX_RETRY = 10;
 
 @implementation KaareJSCoreTransport
 {
@@ -8,7 +9,7 @@ static NSString* K_SYNC_OBJECT_NAME = @"__kaareTransportNativeSyncObject";
     OnReceiveHandler _receiveHandler;
 }
 
-@synthesize onReceive;
+@synthesize execJS;
 
 -(instancetype)initWithContextFinder:(ContextFinder)contextFinder
 {
@@ -22,60 +23,55 @@ static NSString* K_SYNC_OBJECT_NAME = @"__kaareTransportNativeSyncObject";
     return self;
 }
 
--(RACSignal*)send:(NSString*)cmd params:(NSArray*)params
+-(RACSignal*)executeCommand:(NSString *)cmd params:(NSArray *)params
 {
-    return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
-        JSContext* context = _contextFinder();
-        JSValue* function = [context evaluateScript:cmd];
-        
-        if ([function isUndefined] || [function isNull])
+    return [[RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+        JSValue* jsExecutor = [self execJS];
+        if (!jsExecutor || [jsExecutor isUndefined])
         {
-            [subscriber sendError:[NSError errorWithDomain:KaareErrorDomain
-                                                      code:KaareErrCommandNotFound
-                                                  userInfo:@{@"Command":cmd,
-                                                             @"This":[context evaluateScript:@"this"],
-                                                             @"Exception": [context exception],
-                                                             @"ExceptionInfo":[[context exception] toObject]}]];
-            return nil;
+            NSLog(@"Sync object is not yet ready on JS side");
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [subscriber sendError:[NSError errorWithDomain:KaareErrorDomain code:KaareTransportError userInfo:nil]];
+            });
         }
-        
-        // We wrap the function in order to expand array to function parameters using ES6 spread operator
-        // We cannot use apply here, becasue it will override function this 
-        JSValue* wrapFunction = [context evaluateScript:[NSString stringWithFormat:@"(function(params){return %@(...params)})",cmd]];
-        JSValue* functionCallResult = params.count ? [wrapFunction callWithArguments:@[params]] : [wrapFunction callWithArguments:nil];
-        
-        if ([context exception])
+        else
         {
-            [subscriber sendError:[NSError errorWithDomain:KaareErrorDomain
-                                                      code:KaareErrJSException
-                                                  userInfo:@{@"Command":cmd,
-                                                             @"This":[context evaluateScript:@"this"],
-                                                             @"Exception": [context exception],
-                                                             @"ExceptionInfo":[[context exception] toObject]}]];
-            return nil;
-        }
-        
-        
-        if ([[functionCallResult valueForProperty:@"subscribe"] isObject])  // Function returns signal, let's subscribe to it
-            [functionCallResult invokeMethod:@"subscribe" withArguments:@[^(id v) { [subscriber sendNext:v]; },
-                                                                          ^(id error) { [subscriber sendError:error]; },
-                                                                          ^() { [subscriber sendCompleted]; } ]];
-        else    // Simple value, let's just return it
-        {
-            [subscriber sendNext:[functionCallResult toObject]];
-            [subscriber sendCompleted];
+            JSValue* retVal = [jsExecutor callWithArguments:(params ? @[cmd,params] : @[cmd])];
+            
+            if ([[retVal valueForProperty:@"subscribe"] isObject])
+                [retVal invokeMethod:@"subscribe" withArguments:@[^(id v) { [subscriber sendNext:v]; },
+                                                                  ^(id error) {            
+                    if (error[@"message"] && error[@"name"]) // We assume that this is Error object
+                        [subscriber sendError:[NSError errorWithDomain:KaareErrorDomain
+                                                                  code:KaareErrJSError
+                                                              userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"%@: %@",error[@"name"],error[@"message"]],
+                                                                         NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat:@"Line %@:%@",error[@"line"],error[@"column"]]}]];
+                    else
+                        [subscriber sendError:error];
+                },
+                                                                  ^() { [subscriber sendCompleted]; } ]];
+            else
+            {
+                JSContext* context = _contextFinder();
+                [subscriber sendError:[NSError errorWithDomain:KaareErrorDomain
+                                                          code:KaareErrJSError
+                                                      userInfo:@{NSLocalizedDescriptionKey:[NSString stringWithFormat:@"Error occured during %@ command execution",cmd],
+                                                                 NSLocalizedFailureReasonErrorKey: [NSString stringWithFormat:@"%@. %@",
+                                                                                                    [context exception],
+                                                                                                    [[context exception] toDictionary]],}]];
+            }
         }
         
         return nil;
-    }];
+    }] retry:SYNC_MAX_RETRY];
 }
 
--(void)onReceive:(OnReceiveHandler)handler
+-(void)onIncomingCommand:(OnReceiveHandler)handler
 {
     _receiveHandler = handler;
 }
 
--(void)bridge:(NSString *)cmd :(NSArray *)params :(JSValue *)onNext :(JSValue *)onError :(JSValue *)onCompleted
+-(void)execNative:(NSString *)cmd :(NSArray *)params :(JSValue *)onNext :(JSValue *)onError :(JSValue *)onCompleted
 {
     [_receiveHandler(cmd,params) subscribeNext:^(id value) {
         [onNext callWithArguments:@[value]];
@@ -86,7 +82,7 @@ static NSString* K_SYNC_OBJECT_NAME = @"__kaareTransportNativeSyncObject";
     }];
 }
 
--(void)stop
+-(void)stopReceiving
 {
     _contextFinder()[K_SYNC_OBJECT_NAME] = nil;
 }

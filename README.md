@@ -71,11 +71,11 @@ From now on you can develop all your JS code using your favorite OS and tools li
 - [x] Funcionality to call functions that returns anything but signal
 - [x] User can register kaare using any order: JSCore than native, or vice versa. When command exec requested and other side is not yet ready - Kaare would wait for 10 second before fail
 - [x] Forwarder name: Native and JS has a different API naming, we should solve it
-- [ ] Remote transport
+- [x] Remote transport
   - [x] JS side
-  - [ ] Native side
-- [x] Kaare-Platform
-- [ ] Split kaare.exec and kaare.runCommand: Then we will be able to move away from eval in JS for command execution
+  - [x] Native side
+- [ ] Kaare-Platform
+- [x] Error has to be proxied between native and JS context using both transports: JSCore and Remote
 - [x] Distribution:
     - [x] Compile all JS in Kaare.js
       - [x] Smart distibution - maybe Rx.js already included and we should allow user to include only Kaare functions, without libs

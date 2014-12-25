@@ -1,8 +1,10 @@
 Kaare.transports.Remote.RedisCommunicator = function (url) {
+    const DATA_TYPE = '__kType',
+        TYPE_ERROR = 'Error'
+
     let _url = url,
         _req,
-        _key,
-        _isAborted
+        _key
 
     /**
      * Publish message to redis
@@ -14,22 +16,26 @@ Kaare.transports.Remote.RedisCommunicator = function (url) {
         let req = new XMLHttpRequest(),
             serData
 
-        if (_isAborted)
-            msg = {
-                'ABORT': 'ABORT'
+        if (msg.data instanceof Error) { // JSON.stringify doesn't work with errors
+            msg.data = {
+                name: msg.data.name,
+                message: msg.data.message,
+                stack: msg.data.stack,
+                [DATA_TYPE]: TYPE_ERROR
             }
-
-        if (msg.data instanceof Error) // JSON.stringify doesn't work with errors
-            msg.data = JSON.stringify(msg.data, ['message', 'arguments', 'type', 'name'])
+        }
 
         console.log(`Sending message: ` + JSON.stringify(msg))
         serData = btoa(JSON.stringify(msg))
-        req.open('GET', `${_url}/PUBLISH/${key}/${serData}`, true)
+        if (serData.length > 200000)
+            throw new Error('Currently remote transport does not support messages with a size bigger than 200kb')
+
+        req.open('POST', _url, false)
         req.onreadystatechange = () => {
             if (req.responseText === '{"PUBLISH":0}')
                 console.error(`There are no subscibers found for this message: ${serData}`)
         }
-        req.send()
+        req.send(`PUBLISH/${key}/${serData}`)
     }
 
     /**
@@ -38,7 +44,8 @@ Kaare.transports.Remote.RedisCommunicator = function (url) {
      * @return {Observable} Neverending observable which would contain message object
      */
     this.subscribe = (key) => {
-        let prevRespLength = 0
+        let prevRespLength = 0,
+            prevMsgPart
         _key = key
         _req = new XMLHttpRequest()
 
@@ -58,14 +65,28 @@ Kaare.transports.Remote.RedisCommunicator = function (url) {
 
                     console.info(`Raw input ${chunk}`)
                     chunk.split(/(?={)/).forEach(msg => { // Sometimes chunk contains multiple messages like {"SUBSCRIBE":["message","[key]","[data]"]}
+                        if (prevMsgPart) {
+                            msg = prevMsgPart + msg
+                            prevMsgPart = null
+                        }
+
                         try {
                             parsedData = JSON.parse(msg)
+                        } catch (ex) {
+                            prevMsgPart = msg
+                            return;
+                        }
+
+                        try {
                             msg = parsedData.SUBSCRIBE.pop()
                             parsedData = msg !== 1 ? JSON.parse(atob(msg)) : 1
+                            if (parsedData.data && DATA_TYPE in parsedData.data) 
+                                parsedData.data = processCustomType(parsedData.data)
                             console.info(`Incoming data ` + JSON.stringify(parsedData))
                         } catch (ex) {
-                            console.error(`Failed to parse JSON data: ${chunk}. Error: ${ex}`)
+                            console.error(`Error during parsing message: ${ex}`)
                         }
+
                         observer.onNext(parsedData)
                     })
                 }
@@ -80,8 +101,24 @@ Kaare.transports.Remote.RedisCommunicator = function (url) {
     this.unsubscribe = () => {
         if (_req) {
             _req.abort()
-            _isAborted = true
             console.info(`Redis communicator ${_key} stopped listening`)
         }
+    }
+
+    var processCustomType = function(data)
+    {
+        if (data[DATA_TYPE] !== TYPE_ERROR)
+            throw new Error(`Not supportd custom type: ${data[DATA_TYPE]}`)
+
+        let glob = (function(){return this}).call(null), // Get reference to global context
+            err
+        
+        if (data.name in glob)
+            err = new glob[data.name](data.message)
+        else
+            err = new Error(data.message)
+        
+        err.stack = data.stack
+        return err
     }
 }

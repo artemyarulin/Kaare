@@ -1,17 +1,17 @@
-#import "Kaare.h"
 @import JavaScriptCore;
+#import "Kaare.h"
 
 typedef JSContext*(^ContextFinder)();
 
 @protocol KaareJSCoreExports <JSExport>
 
--(void)bridge:(NSString*)cmd
-             :(NSArray*)params
-             :(JSValue*)onNext
-             :(JSValue*)onError
-             :(JSValue*)onCompleted;
+-(void)execNative:(NSString*)cmd
+                 :(NSArray*)params
+                 :(JSValue*)onNext
+                 :(JSValue*)onError
+                 :(JSValue*)onCompleted;
 
-@property JSValue* onReceive;
+@property (retain) JSValue* execJS;
 
 @end
 

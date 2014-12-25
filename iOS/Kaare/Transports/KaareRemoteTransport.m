@@ -1,5 +1,7 @@
 #import "KaareRemoteTransport.h"
-#import "AFNetworking.h"
+
+NSString* const DATA_TYPE = @"__kType";
+NSString* const TYPE_ERROR = @"Error";
 
 @implementation KaareRemoteTransport
 {
@@ -11,14 +13,14 @@
     NSURLSessionDataTask* subscribeTask;
 }
 
-
 -(instancetype)initWithOptions:(NSDictionary *)options
 {
     if (self = [super init])
     {
-        _curKey = options[@"curKey"] ? options[@"curKey"] : @"server.default";
+        _curKey =    options[@"curKey"]    ? options[@"curKey"]    : @"server.default";
         _remoteKey = options[@"remoteKey"] ? options[@"remoteKey"] : @"client.default";
-        _url = options[@"url"] ? options[@"url"] : @"http://localhost:7379";
+        _url =       options[@"url"]       ? options[@"url"]       : @"http://localhost:7379";
+       
         _handlers = [@{} mutableCopy];
         [self subscibe:_url];
     }
@@ -32,7 +34,7 @@
     [subscribeTask resume];
 }
 
-- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
+-(void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data
 {
     NSString* chunk = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     
@@ -52,7 +54,18 @@
         if ([[NSString stringWithFormat:@"%@",msgData] isEqualToString:@"1"])
             return;
         
-        NSDictionary* msgValues = [NSJSONSerialization JSONObjectWithData:[[NSData alloc] initWithBase64EncodedString:msgData options:0] options:0 error:nil];
+        NSMutableDictionary* msgValues = [[NSJSONSerialization JSONObjectWithData:[[NSData alloc] initWithBase64EncodedString:msgData options:0] options:0 error:nil] mutableCopy];
+        
+        if ([msgValues[@"data"] isKindOfClass:NSDictionary.class] &&
+            [msgValues[@"data"][DATA_TYPE] isEqualToString:TYPE_ERROR])
+        {
+            NSDictionary* errData = msgValues[@"data"];
+            NSError* err = [NSError errorWithDomain:KaareErrorDomain code:KaareErrJSError userInfo:@{
+                                                                                                     NSLocalizedDescriptionKey: errData[@"message"],
+                                                                                                     NSLocalizedFailureReasonErrorKey: errData[@"name"],
+                                                                                                     }];
+            msgValues[@"data"] = err;
+        }
         
         if (msgValues[@"cmd"])
             [self onCommand:msgValues];
@@ -82,7 +95,12 @@
 {
     NSMutableDictionary* msgData = [msg mutableCopy];
     if ([msgData[@"data"] isKindOfClass:[NSError class]])
-        msgData[@"data"] = ((NSError*)msgData[@"data"]).userInfo;
+    {
+        NSError* err = msgData[@"data"];
+        msgData[@"data"] = @{@"name": [NSString stringWithFormat:@"%@.%ld", err.domain, (long)err.code],
+                             @"message": err.localizedDescription,
+                             DATA_TYPE: TYPE_ERROR };
+    }
     
     NSString* encodedData = [[NSJSONSerialization dataWithJSONObject:msgData options:0 error:nil] base64EncodedStringWithOptions:0];
     NSMutableURLRequest* req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/PUBLISH/%@/%@",_url,key,encodedData]]];
@@ -119,7 +137,6 @@
         return;
     }
     
-    
     if ([type isEqualToString:@"next"])
         [observer sendNext:cbData];
     else {
@@ -135,12 +152,12 @@
 }
 
 
--(void)onReceive:(OnReceiveHandler)handler
+-(void)onIncomingCommand:(OnReceiveHandler)handler
 {
     _onReceive = handler;
 }
 
--(RACSignal*)send:(NSString *)cmd params:(NSArray *)params
+-(RACSignal*)executeCommand:(NSString *)cmd params:(NSArray *)params
 {
     return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
         NSString* opId = [[NSUUID UUID] UUIDString];
@@ -150,7 +167,7 @@
     }];
 }
 
--(void)stop
+-(void)stopReceiving
 {
     [subscribeTask suspend];
 }

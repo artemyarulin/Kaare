@@ -10,7 +10,7 @@
     Kaare* kaare2;
 }
 
--(void)cleanup { [kaare1.transport stop]; [kaare2.transport stop]; }
+-(void)cleanup { [kaare1.transport stopReceiving]; [kaare2.transport stopReceiving]; }
 
 -(CommandHandler)range
 {
@@ -70,12 +70,13 @@
     if (!isDone) WAIT_WHILE(!isDone, 2);
 }
 
--(void)testRemoteTransportShouldReturnError
+-(void)testRemoteTransportShouldReturnErrorIfCommandNotFound
 {
     [[kaare1 executeCommand:@"range" params:nil]
         subscribeNext:^(id v) { XCTFail(@"There should be no value %@", v); }
         error:^(NSError *error) {
-            NSLog(@"%@",error);
+            XCTAssert([error isKindOfClass:NSError.class],@"There should be right type of an error");
+            XCTAssert([error.localizedDescription containsString:@"cannot be found"],@"There should be right message");
             isDone = YES;
         }
         completed:^{ XCTFail(@"Complete should never be called");}

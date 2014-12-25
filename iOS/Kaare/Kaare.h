@@ -5,21 +5,24 @@ typedef RACSignal* (^OnReceiveHandler)(NSString* cmd, NSArray* params);
 
 @protocol KaareTransport
 
--(RACSignal*)send:(NSString*)cmd params:(NSArray*)params;
--(void)onReceive:(OnReceiveHandler)handler;
--(void)stop;
+-(RACSignal*)executeCommand:(NSString*)cmd params:(NSArray*)params;
+
+-(void)onIncomingCommand:(OnReceiveHandler)handler;
+
+-(void)stopReceiving;
 
 @end
 
 
 @interface Kaare : NSObject
 
+@property (readonly) id<KaareTransport> transport;
+
 -(instancetype)initWithTransport:(id<KaareTransport>)transport;
 
 -(RACSignal*)executeCommand:(NSString*)cmd params:(NSArray*)params;
--(void)registerCommand:(NSString*)cmd handler:(CommandHandler)handler;
 
-@property (readonly) id<KaareTransport> transport;
+-(void)registerCommand:(NSString*)cmd handler:(CommandHandler)handler;
 
 @end
 
@@ -29,5 +32,6 @@ enum KaareErrType
 {
     KaareErrUndefined = 0,
     KaareErrCommandNotFound,
-    KaareErrJSException
+    KaareErrJSError,
+    KaareTransportError
 };
