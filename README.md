@@ -66,23 +66,6 @@ From now on you can develop all your JS code using your favorite OS and tools li
 
 # Roadmap
 
-## 1.0.0
-- [x] Functionality to call JS functions without kaare.addLocalCommand
-- [x] Funcionality to call functions that returns anything but signal
-- [x] User can register kaare using any order: JSCore than native, or vice versa. When command exec requested and other side is not yet ready - Kaare would wait for 10 second before fail
-- [x] Forwarder name: Native and JS has a different API naming, we should solve it
-- [x] Remote transport
-  - [x] JS side
-  - [x] Native side
-- [x] Kaare-Platform
-- [x] Error has to be proxied between native and JS context using both transports: JSCore and Remote
-- [x] Distribution:
-    - [x] Compile all JS in Kaare.js
-      - [x] Smart distibution - maybe Rx.js already included and we should allow user to include only Kaare functions, without libs
-    - [x] Create CocoaPod for Kaare which will include Kaare.js
-    - [x] Create CocoaPod for Kaare-Platform
-    - [ ] Publish Kaare and KaarePlatform to Cocoapods
-
 ## 1.2.0
 - [ ] UIWebView transport
 - [ ] Think about how we can simplify the API and get rid of `KaarePlatform* platform = [[KaarePlatform alloc] initWithKaare:kaare]`
