@@ -29,7 +29,10 @@ NSString* const TYPE_ERROR = @"Error";
 
 -(void)subscibe:(NSString*)url
 {
-    NSURLSession* session = [NSURLSession sessionWithConfiguration:NSURLSessionConfiguration.ephemeralSessionConfiguration delegate:self delegateQueue:nil];
+    NSURLSessionConfiguration* config = NSURLSessionConfiguration.ephemeralSessionConfiguration;
+    config.timeoutIntervalForRequest = 0;
+    NSURLSession* session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:nil];
+    
     subscribeTask = [session dataTaskWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/SUBSCRIBE/%@",_url,_curKey]]];
     [subscribeTask resume];
 }
@@ -102,10 +105,17 @@ NSString* const TYPE_ERROR = @"Error";
                              DATA_TYPE: TYPE_ERROR };
     }
     
-    NSString* encodedData = [[NSJSONSerialization dataWithJSONObject:msgData options:0 error:nil] base64EncodedStringWithOptions:0];
-    NSMutableURLRequest* req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/PUBLISH/%@/%@",_url,key,encodedData]]];
+    NSString* encodedData = [[NSJSONSerialization dataWithJSONObject:msgData options:0 error:nil] base64EncodedStringWithOptions:nil];
+    
+    NSMutableURLRequest* req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@",_url]]];
+    req.HTTPMethod = @"POST";
+    req.HTTPBody = [[NSString stringWithFormat:@"PUBLISH/%@/%@",key,encodedData] dataUsingEncoding:NSUTF8StringEncoding];
 
-    NSData* data = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:nil];
+    NSError* err;
+    NSData* data = [NSURLConnection sendSynchronousRequest:req returningResponse:nil error:&err];
+    if (err)
+        NSLog(@"Error during publish: %@",err);
+    
     NSString* output = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     if ([output isEqualToString:@"{\"PUBLISH[\":0}"])
         NSLog(@"WARN: There are no subscibers found for this message: %@",msg);
@@ -171,4 +181,5 @@ NSString* const TYPE_ERROR = @"Error";
 {
     [subscribeTask suspend];
 }
+
 @end

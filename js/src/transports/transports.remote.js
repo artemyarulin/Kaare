@@ -1,7 +1,7 @@
 Kaare.transports.Remote = function (options) {
-    let _url = options.url || 'http://localhost:7379',
-        _curKey = options.curKey || 'client.default',
-        _remoteKey = options.remoteKey || 'server.default',
+    let _url = options && options.url || 'http://localhost:7379',
+        _curKey = options && options.curKey || 'client.default',
+        _remoteKey = options && options.remoteKey || 'server.default',
         _handlers = {},
         _communicator = new Kaare.transports.Remote.RedisCommunicator(_url)
 

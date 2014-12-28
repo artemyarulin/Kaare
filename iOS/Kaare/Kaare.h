@@ -1,4 +1,4 @@
-#import "ReactiveCocoa.h"
+#import <ReactiveCocoa.h>
 
 typedef RACSignal* (^CommandHandler)(NSArray* params);
 typedef RACSignal* (^OnReceiveHandler)(NSString* cmd, NSArray* params);

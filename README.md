@@ -74,7 +74,7 @@ From now on you can develop all your JS code using your favorite OS and tools li
 - [x] Remote transport
   - [x] JS side
   - [x] Native side
-- [ ] Kaare-Platform
+- [x] Kaare-Platform
 - [x] Error has to be proxied between native and JS context using both transports: JSCore and Remote
 - [x] Distribution:
     - [x] Compile all JS in Kaare.js

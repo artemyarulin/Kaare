@@ -80,9 +80,9 @@ Kaare.transports.Native = function() {
 "use strict";
 Kaare.transports.Remote = function(options) {
   var $__0 = this;
-  var _url = options.url || 'http://localhost:7379',
-      _curKey = options.curKey || 'client.default',
-      _remoteKey = options.remoteKey || 'server.default',
+  var _url = options && options.url || 'http://localhost:7379',
+      _curKey = options && options.curKey || 'client.default',
+      _remoteKey = options && options.remoteKey || 'server.default',
       _handlers = {},
       _communicator = new Kaare.transports.Remote.RedisCommunicator(_url);
   void 0;
